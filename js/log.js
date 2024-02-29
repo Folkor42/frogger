@@ -1,24 +1,19 @@
-class Car extends Rectangle {
+class Log extends Car{
     constructor(x, y, w, h, img, speed) {
-        super(x, y, w, h);
-        this.img = img;
-        this.w=w;
-        this.speed=speed;
+        super(x, y, w, h, img, speed);
     }
-
     update(){
         this.left += this.speed;
         this.right += this.speed;
         if (this.speed > 0 && this.left > width){
-            this.left = -this.w-grid*2;
+            this.left = -this.w-grid*4;
             this.right = this.left+this.w;
         }
-        if (this.speed < 0 && this.right < 0){
-            this.left = width+grid*2;
+        if (this.speed < 0 && this.right < 0-grid*3){
+            this.left = width+grid*4;
             this.right = this.left+this.w;
         }
     }
-
     show() {
         // fill(255);
         // rectMode(CORNERS);

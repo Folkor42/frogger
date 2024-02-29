@@ -1,0 +1,49 @@
+{
+    "cars": [{
+        "name": "firetruck",
+        "position": {
+          "x": 0,
+          "y": 395,
+          "w": 200,
+          "h": 80
+        }
+      },
+      {
+        "name": "truck",
+        "position": {
+          "x": 200,
+          "y": 395,
+          "w": 300,
+          "h": 80
+        }
+      },
+      {
+        "name": "sportscar",
+        "position": {
+          "x": 0,
+          "y": 480,
+          "w": 150,
+          "h": 80
+        }
+      },
+      {
+        "name": "policecar",
+        "position": {
+          "x": 150,
+          "y": 480,
+          "w": 150,
+          "h": 80
+        }
+      },
+      {
+        "name": "car",
+        "position": {
+          "x": 300,
+          "y": 480,
+          "w": 150,
+          "h": 80
+        }
+      }
+    ]
+  }
+  

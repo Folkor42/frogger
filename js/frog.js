@@ -11,7 +11,27 @@ class Frog extends Rectangle {
         image(this.img, this.left, this.top);
     }
 
+    attach(log) {
+        this.move(log.speed, 0);
+    }
+
+    update() {
+        if (this.left < 0) {
+            this.move(grid, 0);
+        }
+        if (this.right > width) {
+            this.move(-grid, 0);
+        }
+        if (this.top < 0) {
+            this.move(0, grid);
+        }
+        if (this.bottom > height) {
+            this.move(0, -grid);
+        }
+    }
+
     death(){
+        lives--;
         image(this.splat, this.left-(grid/2), this.top-(grid/2));
     }
 
@@ -22,7 +42,6 @@ class Frog extends Rectangle {
         this.right += x;
         this.top += y;
         this.bottom += y;
-        score++;
         return true;
         } else {
             return false;

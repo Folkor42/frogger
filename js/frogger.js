@@ -2,6 +2,7 @@ grid=50;
 cars=[];
 logs=[];
 lanes=[];
+let animation =[];
 let frogHopSound;
 let frogSquishSound;
 let frogHomeSound;
@@ -11,14 +12,6 @@ var highscore=0;
 var lives=2;
 var highestLane=9;
 gameState=3;
-// Possible Game States:
-// 0: Title Screen (Simple Mode)
-// 1: Game Play (Simple Mode)
-// 2: Game Play (Faster Mode)
-// 3: Title Screen (Faster Mode)
-// 4: Game Over
-// 5: Game Win
-
 var frogOk;
 
 function gameModeChange(mode){
@@ -26,8 +19,10 @@ function gameModeChange(mode){
     resetGame();
 }
 function preload(){
-    logo2=loadImage('assets/Frogger-logo2.png');
-    logo=loadImage('assets/Frogger-logo.png');
+    sprite_frog_data=loadJSON('/frogger/assets/frog.json');
+    sprite_car_data=loadJSON('/frogger/assets/cars.json');
+    sprite_sheet=loadImage('/frogger/assets/frogger-game-sprites.png');
+
     logimg4=loadImage('assets/log.png');
     logimg3=loadImage('assets/log.png');
     logimg2=loadImage('assets/log.png');
@@ -52,20 +47,22 @@ function resetGame(){
     score=0;
     lives=2;
     music.stop();
-    music.loop();
+    // music.loop();
 }
 function resetFrog(){
-    frog = new Frog(grid*6, grid*9,grid,grid,img,splat);
+    frog = new Frog(grid*6, grid*9,grid,grid,animation,splat);
     highestLane=9;
 }
 function titleScreen(){
     music.stop();
     clear();
     background(255);
-    image(logo2,0,0);
+    textSize(32);
+    fill(0,200,0);
+    stroke(0,100,0);
+    strokeWeight(3);
+    text("Frogger", width/2-grid, height/2);
     textSize(16);
-    fill(0);
-    stroke(100);
     text("Press Enter to Play", width/2-grid-10, height/2+grid);
     if (keyCode === ENTER){
         resetGame();
@@ -73,40 +70,20 @@ function titleScreen(){
     }
 }
 
-function titleScreenNormal(){
+function titleScreen2(){
     music.stop();
     clear();
     background(0);
-    image(logo,0,0);
-    textSize(16);
-    fill(255);
-    text("Press Enter to Play", width/2-grid, grid*9);
-    if (keyCode === ENTER){
-        resetGame();
-        gameState=2;
-    }
-    
-}
-
-function gameOverScreen(){
-    gameState=4;
-    music.stop();
-    clear();
-    background(0);
-    textSize(grid);
+    textSize(32);
     fill(0,200,0);
     stroke(0,100,0);
     strokeWeight(2);
-    text("Game Over", grid*4, grid*3);
-    fill(200);
-    text("Score: "+score, grid*4, grid*5);
-    textSize(grid/2);
-    stroke(0);
-    fill(100);
-    text("Press Enter to Restart", grid*4, grid*6);
+    text("Frogger", width/2-grid, height/2);
+    textSize(16);
+    text("Press Enter to Play", width/2-grid-10, height/2+grid);
     if (keyCode === ENTER){
         resetGame();
-        gameState=3;          
+        gameState=2;
     }
     
 }
@@ -143,10 +120,15 @@ function checkScore(){
 
 function setup(){
     angleMode(DEGREES);
-    
+    console.log(sprite_frog_data);
+    let frames = sprite_frog_data.frames;
+    console.log(frames.length);
+    for (let i = 0; i < frames.length; i++) {
+      let pos = frames[i].position;
+      let frame = sprite_sheet.get(pos.x, pos.y, pos.w, pos.h);
+      animation.push(frame);
+    }
     // Scale images to grid size
-    logo.resize(grid*13,grid*9);
-    logo2.resize(grid*13,grid*6);
     img.resize(grid,grid);
     splat.resize(grid*2,grid*2);
     img2.resize(grid*2,grid);
@@ -250,10 +232,7 @@ function setup(){
 }
 
 function draw(){
-    if (gameState==0)
-    {
-        titleScreen();
-    } else if (gameState==1)
+if (gameState==1)
     { 
         background(0);
     
@@ -287,6 +266,7 @@ function draw(){
         
         frog.update();
         frog.show();
+
         for (car of cars){
             car.update();
             car.show();
@@ -307,6 +287,10 @@ function draw(){
         }
         showScore(); 
     }
+    else if (gameState==0)
+    {
+        titleScreen();
+    }
     else if (gameState==2)
     {
         background(0);
@@ -323,43 +307,56 @@ function draw(){
         lanes[laneIndex].check(frog);
         
         showLives();
+        showScore();  
         frog.update();
         frog.show();
+        // if (frog.moving!=false) {
+        //     frog.animate();
+        //   }
         if (lives<0)
         {
-            gameOverScreen();
+            music.stop();
+            lives=2;
+            highscore=0;
+            alert("Game Over, restarting...");            
+            resetGame();
         }
-        showScore();  
     }
     else if (gameState==3)
     {
-        titleScreenNormal();
-    }
-    else if (gameState==4)
-    {
-        gameOverScreen();
+        titleScreen2();
     }
 }
 
 function keyPressed(){
-    if (gameState==1 || gameState==2)
-    {
-        if (keyCode === UP_ARROW){
-            if (frog.move(0,-grid))
-                {
-                    frogHopSound.play();
-                    checkScore();
-                }
-        } else if (keyCode === DOWN_ARROW){
-            if (frog.move(0,grid))
+    if (keyCode === UP_ARROW){
+        if (frog.move(0,-grid))
+            {
                 frogHopSound.play();
-        } else if (keyCode === LEFT_ARROW){
-            if (frog.move(-grid,0))
+                frog.moving='up';
+                frog.lastfacing='up';
+                checkScore();
+            }
+    } else if (keyCode === DOWN_ARROW){
+        if (frog.move(0,grid))
+            {
                 frogHopSound.play();
-        } else if (keyCode === RIGHT_ARROW){
-            if (frog.move(grid,0))
+                frog.moving='down';
+                frog.lastfacing='down';
+            }
+    } else if (keyCode === LEFT_ARROW){
+        if (frog.move(-grid,0))
+            {
                 frogHopSound.play();
-        
-        }
+                frog.moving='left';
+                frog.lastfacing='left';
+            }
+    } else if (keyCode === RIGHT_ARROW){
+        if (frog.move(grid,0))
+            {
+                frogHopSound.play();
+                frog.moving='right';
+                frog.lastfacing='right';
+            }
     }
 }

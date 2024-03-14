@@ -16,7 +16,7 @@ function preload() {
 function setup() {
     
     var canvas = createCanvas(770, 770);
-    canvas.parent('sketch-holder');
+    canvas.parent('game');
     angleMode(DEGREES);
     let frames = sprite_data.frames;
     for (let i = 0; i < frames.length; i++) {
